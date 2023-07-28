@@ -28,4 +28,16 @@ function Ball:render()
 	love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 end
 
+function Ball:collides(target)
+	if self.x > target.x + target.width or target.x > self.x + self.width then
+		return false
+	end
+
+	if self.y > target.y + target.height or target.y > self.y + self.height then
+		return false
+	end
+
+	return true
+end
+
 return Ball
