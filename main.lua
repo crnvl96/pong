@@ -8,8 +8,15 @@ local playerA
 local playerB
 local ball
 
+function displayFPS()
+	love.graphics.setFont(constants.SMALL_FONT)
+	love.graphics.setColor(0, 255, 0, 255)
+	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 10, 10)
+end
+
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
+	love.window.setTitle("Pong")
 
 	math.randomseed(os.time())
 
@@ -64,6 +71,38 @@ function love.update(dt)
 	end
 
 	if variables.gameState == "play" then
+		if ball:collides(playerA) then
+			ball.dx = -ball.dx * 1.03
+			ball.x = playerA.x + 5
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150)
+			else
+				ball.dy = math.random(10, 150)
+			end
+		end
+
+		if ball:collides(playerB) then
+			ball.dx = -ball.dx * 1.03
+			ball.x = playerB.x - 4
+
+			if ball.dy < 0 then
+				ball.dy = -math.random(10, 150)
+			else
+				ball.dy = math.random(10, 150)
+			end
+		end
+
+		if ball.y <= 0 then
+			ball.y = 0
+			ball.dy = -ball.dy
+		end
+
+		if ball.y >= constants.VIRTUAL_HEIGHT - 4 then
+			ball.y = constants.VIRTUAL_HEIGHT - 4
+			ball.dy = -ball.dy
+		end
+
 		ball:update(dt)
 	end
 
@@ -84,10 +123,24 @@ function love.draw()
 		love.graphics.printf("Play ball!", 0, 20, constants.VIRTUAL_WIDTH, "center")
 	end
 
+	love.graphics.setFont(constants.SCORE_FONT)
+	love.graphics.print(
+		tostring(variables.playerAScore),
+		constants.VIRTUAL_WIDTH / 2 - 50,
+		constants.VIRTUAL_HEIGHT / 3
+	)
+	love.graphics.print(
+		tostring(variables.playerBScore),
+		constants.VIRTUAL_WIDTH / 2 + 30,
+		constants.VIRTUAL_HEIGHT / 3
+	)
+
 	playerA:render()
 	playerB:render()
 
 	ball:render()
+
+	displayFPS()
 
 	push:apply("end")
 end
