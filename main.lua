@@ -1,39 +1,17 @@
-local push = require("push")
-local constants = require("constants")
+local push = require("lib.push")
+local constants = require("globals.constants")
+local variables = require("globals.variables")
+local Paddle = require("entities.Paddle")
+local Ball = require("entities.Ball")
 
-local smallFont = love.graphics.newFont("font.ttf", 8)
-local scoreFont = love.graphics.newFont("font.ttf", 32)
-
-local playerAScore
-local playerBScore
-local playerAY
-local playerBY
-
-local ballX
-local ballY
-local ballDX
-local ballDY
-
-local gameState
+local playerA
+local playerB
+local ball
 
 function love.load()
 	love.graphics.setDefaultFilter("nearest", "nearest")
 
 	math.randomseed(os.time())
-
-	gameState = "start"
-
-	playerAScore = 0
-	playerBScore = 0
-
-	playerAY = 30
-	playerBY = constants.VIRTUAL_HEIGHT - 50
-
-	ballX = constants.VIRTUAL_WIDTH / 2 - 2
-	ballY = constants.VIRTUAL_HEIGHT / 2 - 2
-
-	ballDX = math.random(2) == 1 and 100 or -100
-	ballDY = math.random(-50, 50)
 
 	push:setupScreen(
 		constants.VIRTUAL_WIDTH,
@@ -46,43 +24,51 @@ function love.load()
 			vsync = true,
 		}
 	)
+
+	playerA = Paddle(10, 30, 5, 20)
+	playerB = Paddle(constants.VIRTUAL_WIDTH - 10, constants.VIRTUAL_HEIGHT - 30, 5, 20)
+
+	ball = Ball(constants.VIRTUAL_WIDTH / 2 - 2, constants.VIRTUAL_HEIGHT / 2 - 2, 4, 4)
+
+	variables.gameState = "start"
 end
 
 function love.keypressed(key)
 	if key == "escape" then
 		love.event.quit()
 	elseif key == "enter" or key == "return" then
-		if gameState == "start" then
-			gameState = "play"
+		if variables.gameState == "start" then
+			variables.gameState = "play"
 		else
-			gameState = "start"
-
-			ballX = constants.VIRTUAL_WIDTH / 2 - 2
-			ballY = constants.VIRTUAL_HEIGHT / 2 - 2
-
-			ballDX = math.random(2) == 1 and 100 or -100
-			ballDY = math.random(-50, 50)
+			variables.gameState = "start"
+			ball:reset()
 		end
 	end
 end
 
 function love.update(dt)
 	if love.keyboard.isDown("w") then
-		playerAY = math.max(0, playerAY + -constants.PADDLE_SPEED * dt)
+		playerA.dy = -constants.PADDLE_SPEED
 	elseif love.keyboard.isDown("s") then
-		playerAY = math.min(constants.VIRTUAL_HEIGHT - 20, playerAY + constants.PADDLE_SPEED * dt)
+		playerA.dy = constants.PADDLE_SPEED
+	else
+		playerA.dy = 0
 	end
 
 	if love.keyboard.isDown("up") then
-		playerBY = math.max(0, playerBY + -constants.PADDLE_SPEED * dt)
+		playerB.dy = -constants.PADDLE_SPEED
 	elseif love.keyboard.isDown("down") then
-		playerBY = math.min(constants.VIRTUAL_HEIGHT - 20, playerBY + constants.PADDLE_SPEED * dt)
+		playerB.dy = constants.PADDLE_SPEED
+	else
+		playerB.dy = 0
 	end
 
-	if gameState == "play" then
-		ballX = ballX + ballDX * dt
-		ballY = ballY + ballDY * dt
+	if variables.gameState == "play" then
+		ball:update(dt)
 	end
+
+	playerA:update(dt)
+	playerB:update(dt)
 end
 
 function love.draw()
@@ -90,18 +76,18 @@ function love.draw()
 
 	love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 255 / 255)
 
-	love.graphics.setFont(smallFont)
+	love.graphics.setFont(constants.SMALL_FONT)
 
-	love.graphics.printf("Hello pong", 0, 20, constants.VIRTUAL_WIDTH, "center")
+	if variables.gameState == "start" then
+		love.graphics.printf("Welcome to Pong!", 0, 20, constants.VIRTUAL_WIDTH, "center")
+	else
+		love.graphics.printf("Play ball!", 0, 20, constants.VIRTUAL_WIDTH, "center")
+	end
 
-	love.graphics.setFont(scoreFont)
+	playerA:render()
+	playerB:render()
 
-	love.graphics.print(tostring(playerAScore), constants.VIRTUAL_WIDTH / 2 - 50, constants.VIRTUAL_HEIGHT / 3)
-	love.graphics.print(tostring(playerBScore), constants.VIRTUAL_WIDTH / 2 + 30, constants.VIRTUAL_HEIGHT / 3)
-
-	love.graphics.rectangle("fill", 10, playerAY, 5, 20)
-	love.graphics.rectangle("fill", constants.VIRTUAL_WIDTH - 10, playerBY, 5, 20)
-	love.graphics.rectangle("fill", ballX, ballY, 4, 4)
+	ball:render()
 
 	push:apply("end")
 end
