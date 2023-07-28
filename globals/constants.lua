@@ -9,6 +9,7 @@ local constants = {
 	PADDLE_SPEED = 200,
 
 	SMALL_FONT = love.graphics.newFont("font.ttf", 8),
+	SCORE_FONT = love.graphics.newFont("font.ttf", 32),
 }
 
 return constants
