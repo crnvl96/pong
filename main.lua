@@ -8,7 +8,7 @@ local playerA
 local playerB
 local ball
 
-function displayFPS()
+local function displayFPS()
 	love.graphics.setFont(constants.SMALL_FONT)
 	love.graphics.setColor(0, 255, 0, 255)
 	love.graphics.print("FPS: " .. tostring(love.timer.getFPS()), 10, 10)
