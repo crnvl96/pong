@@ -12,7 +12,7 @@ https://github.com/crnvl96/pong/assets/84354013/8d3f175d-efe9-4e3a-9e43-e1ad22eb
 - In a terminal window, run `love pong.love`
 
 ## Playing the game
-- Press <Enter> to serve
+- Press `Enter` to serve
 - Players move their paddles by pressinf `W and S`, and `<Up> and <Down>`
 - First player to Score 10 points wins
 
