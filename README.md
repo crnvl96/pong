@@ -2,7 +2,7 @@
 
 ## Demo:
 
-https://github.com/crnvl96/pong/assets/84354013/3fda63f6-171c-41a5-bfbb-765ceaf31a7c
+https://github.com/crnvl96/pong/assets/84354013/242ea0c3-b10d-49a5-b586-0c36edc4c7c7
 
 ## Usage
 
